@@ -3,7 +3,7 @@
 
 ## 📖 项目简介
 
-**Get Jobs（工作无忧）** 是一款开源的多平台自动化求职工具，支持 **Boss直聘、猎聘、51Job、智联招聘** 四大招聘平台。它能够根据用户配置的搜索条件自动搜索岗位、过滤不合适的职位、并代发打招呼/投递消息，帮助求职者高效批量投递简历。
+**Get Jobs（工作无忧）** 是一款开源的多平台自动化求职工具，支持 **Boss直聘、猎聘、智联招聘** 四大招聘平台。它能够根据用户配置的搜索条件自动搜索岗位、过滤不合适的职位、并代发打招呼/投递消息，帮助求职者高效批量投递简历。
 
 本项目是基于 [loks666/get_jobs](https://github.com/loks666/get_jobs)（Java/Spring Boot + Playwright 版本）的 **Go 语言重构版**。保留了原项目的核心业务流程与前端界面，后端使用 Go + Gin + go-rod 重写，架构更轻量，部署更简洁。
 
@@ -28,6 +28,7 @@
 ### 1️⃣ 克隆并启动后端
 
 ```bash
+git clone https://github.com/pubaicode/get_jobs_go.git
 cd get_jobs_go
 
 go build -o server ./cmd/server/
