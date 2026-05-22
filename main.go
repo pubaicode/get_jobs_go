@@ -1,13 +1,16 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -21,6 +24,9 @@ import (
 	"github.com/getjobs/server/pkg/sse"
 	"github.com/gin-gonic/gin"
 )
+
+//go:embed all:out
+var embeddedDist embed.FS
 
 func main() {
 	cfg := config.Load()
@@ -218,8 +224,33 @@ func main() {
 	r.GET("/api/playwright/status", playwrightHandler.Status)
 	r.GET("/api/playwright/test-navigate", playwrightHandler.TestNavigate)
 
-	// Static file serving for frontend
-	r.StaticFS("/front", http.Dir(cfg.FrontendDir))
+	distFS, _ := fs.Sub(embeddedDist, "out")
+	fileServer := http.FileServer(http.FS(distFS))
+	r.Use(func(c *gin.Context) {
+		// 只处理非 API 路径，且包含文件扩展名或者是根路径
+		path := c.Request.URL.Path
+		if strings.HasPrefix(path, "/api") {
+			c.Next() // API 请求跳过静态文件处理
+			return
+		}
+
+		// 尝试提供静态文件
+		fileServer.ServeHTTP(c.Writer, c.Request)
+		// 如果返回 404，说明不是静态文件，继续执行后续路由（NoRoute）
+		if c.Writer.Status() == http.StatusNotFound {
+			// c.Writer.resp() // 重置响应，以便 NoRoute 重新写入
+			c.Next()
+			return
+		}
+		c.Abort() // 已成功提供静态文件，终止后续处理
+	})
+
+	// 3. SPA 兜底：所有未匹配的请求（包括前端路由）返回 index.html
+	r.NoRoute(func(c *gin.Context) {
+		// 注意：这里不应该再使用 c.File，而应该从 embed 中读取
+		indexHtml, _ := embeddedDist.ReadFile("out/index.html")
+		c.Data(http.StatusOK, "text/html; charset=utf-8", indexHtml)
+	})
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)

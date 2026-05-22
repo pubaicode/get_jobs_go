@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 // 源目录和目标目录
 const sourceDir = path.join(__dirname, '..', 'out');
-const targetDir = path.join(__dirname, '..', '..', 'src', 'main', 'resources', 'dist');
+const targetDir = path.join(__dirname, '..', '..', 'out');
 
 console.log('开始复制前端构建文件...');
 console.log('源目录:', sourceDir);

@@ -31,9 +31,16 @@
 git clone https://github.com/pubaicode/get_jobs_go.git
 cd get_jobs_go
 
-go build -o server ./cmd/server/
+go build -o server .
 ./server
+或者
+
+cd front
+npm run build:prod
+go run main.go
+在浏览器中输入 http://localhost:8888
 ```
+
 
 后端默认监听 `:8888`，可通过环境变量配置：
 
