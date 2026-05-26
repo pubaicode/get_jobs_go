@@ -211,6 +211,10 @@ func (w *Worker) postJobByCity(cityCode string, blackCompanies, blackRecruiters,
 		w.scrollToLoadAll(keyword, u)
 
 		postCount := w.processJobCards(blackCompanies, blackRecruiters, blackJobs)
+		if postCount == 0 {
+			w.logProgress(fmt.Sprintf("【%s】扫描完毕", keyword), 0, 0)
+			return
+		}
 		w.logProgress(fmt.Sprintf("【%s】投递完毕，共投递 %d 个", keyword, postCount), 0, 0)
 	}
 }
@@ -235,7 +239,7 @@ func (w *Worker) scrollToLoadAll(keyword, searchUrl string) {
 func (w *Worker) processJobCards(blackCompanies, blackRecruiters, blackJobs []string) int {
 	postCount := 0
 	w.page.MustEval("() => window.scrollTo(0, 0)")
-	time.Sleep(time.Second)
+	time.Sleep(2 * time.Second)
 
 	cards, err := w.page.Elements("ul.rec-job-list li.job-card-box")
 	if err != nil {
@@ -245,6 +249,10 @@ func (w *Worker) processJobCards(blackCompanies, blackRecruiters, blackJobs []st
 	count := len(cards)
 	w.logProgress(fmt.Sprintf("找到 %d 个岗位", count), 0, count)
 
+	if w.cfg.Debugger {
+		log.Print("调试模式, 跳过投递")
+		return 0
+	}
 	for i := 0; i < count; i++ {
 		if w.shouldStop() {
 			return postCount
@@ -386,10 +394,6 @@ func (w *Worker) isDetailFiltered(detail *BossDetail, blackCompanies, blackRecru
 }
 
 func (w *Worker) submitResume(detail *BossDetail) bool {
-	if w.cfg.Debugger {
-		log.Printf("调试模式, 跳过投递: %s", detail.JobName)
-		return false
-	}
 	chatBtn, err := w.page.Timeout(5 * time.Second).Element("a.btn-startchat, a.op-btn-chat")
 	if err != nil {
 		chatBtn, err = w.page.Timeout(3 * time.Second).Element("a.more-job-btn")
