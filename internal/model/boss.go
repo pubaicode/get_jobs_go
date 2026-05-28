@@ -3,28 +3,28 @@ package model
 import "time"
 
 type BossConfig struct {
-	ID               uint      `json:"id" gorm:"primaryKey"`
-	Debugger         *int      `json:"debugger" gorm:"default:0"`
-	WaitTime         *int      `json:"waitTime" gorm:"default:0"`
-	Keywords         string    `json:"keywords" gorm:"type:text"`
-	CityCode         string    `json:"cityCode"`
-	DistrictFilter   string    `json:"districtFilter" gorm:"type:text"`
-	Industry         string    `json:"industry"`
-	JobType          string    `json:"jobType"`
-	Experience       string    `json:"experience"`
-	Degree           string    `json:"degree"`
-	Salary           string    `json:"salary"`
-	Scale            string    `json:"scale"`
-	Stage            string    `json:"stage"`
-	SayHi            string    `json:"sayHi" gorm:"type:text"`
-	ExpectedSalaryMin *int     `json:"expectedSalaryMin" gorm:"default:0"`
-	ExpectedSalaryMax *int     `json:"expectedSalaryMax" gorm:"default:0"`
-	EnableAi         *int      `json:"enableAi" gorm:"default:0"`
-	SendImgResume    *int      `json:"sendImgResume" gorm:"default:0"`
-	FilterDeadHr     *int      `json:"filterDeadHr" gorm:"default:0"`
-	DeadStatus       string    `json:"deadStatus" gorm:"type:text"`
-	CreatedAt        time.Time `json:"createdAt"`
-	UpdatedAt        time.Time `json:"updatedAt"`
+	ID                uint      `json:"id" gorm:"primaryKey"`
+	Debugger          *int      `json:"debugger" gorm:"default:1"`
+	WaitTime          *int      `json:"waitTime" gorm:"default:5"`
+	Keywords          string    `json:"keywords" gorm:"type:text"`
+	CityCode          string    `json:"cityCode"`
+	DistrictFilter    string    `json:"districtFilter" gorm:"type:text"`
+	Industry          string    `json:"industry"`
+	JobType           string    `json:"jobType"`
+	Experience        string    `json:"experience"`
+	Degree            string    `json:"degree"`
+	Salary            string    `json:"salary"`
+	Scale             string    `json:"scale"`
+	Stage             string    `json:"stage"`
+	SayHi             string    `json:"sayHi" gorm:"type:text"`
+	ExpectedSalaryMin *int      `json:"expectedSalaryMin" gorm:"default:0"`
+	ExpectedSalaryMax *int      `json:"expectedSalaryMax" gorm:"default:0"`
+	EnableAi          *int      `json:"enableAi" gorm:"default:0"`
+	SendImgResume     *int      `json:"sendImgResume" gorm:"default:0"`
+	FilterDeadHr      *int      `json:"filterDeadHr" gorm:"default:0"`
+	DeadStatus        string    `json:"deadStatus" gorm:"type:text"`
+	CreatedAt         time.Time `json:"createdAt"`
+	UpdatedAt         time.Time `json:"updatedAt"`
 }
 
 func (BossConfig) TableName() string { return "boss_config" }

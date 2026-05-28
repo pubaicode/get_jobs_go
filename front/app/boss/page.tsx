@@ -74,6 +74,7 @@ const BOSS_PROGRESS_STORAGE_KEY = 'boss-progress-messages'
 
 export default function BossPage() {
   const [config, setConfig] = useState<BossConfig>({
+    debugger: 1,
     keywords: '',
     cityCode: '',
     districtFilter: '',
@@ -803,7 +804,21 @@ export default function BossPage() {
                   <option value="0">关闭</option>
                   <option value="1">开启</option>
                 </Select>
-                <p className="text-xs text-muted-foreground">开启后将过滤活跃状态包含“年”的HR，但仍保存数据。</p>
+                <p className="text-xs text-muted-foreground">开启后将过滤活跃状态包含"年"的HR，但仍保存数据。</p>
+              </div>
+
+              {/* 投递模式选择 */}
+              <div className="space-y-2">
+                <Label htmlFor="workMode">投递模式</Label>
+                <Select
+                  id="workMode"
+                  value={String(config.debugger ?? 1)}
+                  onChange={(e) => setConfig({ ...config, debugger: Number(e.target.value) })}
+                >
+                  <option value="0">投递模式</option>
+                  <option value="1">测试模式</option>
+                </Select>
+                <p className="text-xs text-muted-foreground">测试模式下仅扫描并记录岗位信息，不会实际投递。</p>
               </div>
               </div>
             </CardContent>

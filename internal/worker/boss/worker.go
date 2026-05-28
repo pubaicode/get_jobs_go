@@ -212,7 +212,7 @@ func (w *Worker) postJobByCity(cityCode string, blackCompanies, blackRecruiters,
 
 		postCount := w.processJobCards(blackCompanies, blackRecruiters, blackJobs)
 		if postCount == 0 {
-			w.logProgress(fmt.Sprintf("【%s】扫描完毕", keyword), 0, 0)
+			w.logProgress(fmt.Sprintf("【%s】扫描完毕", keyword), postCount, postCount)
 			return
 		}
 		w.logProgress(fmt.Sprintf("【%s】投递完毕，共投递 %d 个", keyword, postCount), 0, 0)
