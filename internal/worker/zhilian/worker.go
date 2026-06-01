@@ -21,6 +21,7 @@ type Config struct {
 	CityCode string
 	Salary   string
 	WaitTime int
+	Debugger bool
 }
 
 type Worker struct {
@@ -237,16 +238,20 @@ func (w *Worker) deliverCurrentPage(keyword string) {
 		job.DeliveryStatus = "未投递"
 		inserted := w.saveIfNotExists(&job)
 
-		applyBtn, _ := item.Element("button.collect-and-apply__btn")
-		if applyBtn != nil {
-			applyBtn.MustClick()
-			time.Sleep(2 * time.Second)
-			w.handleDeliveryDialog()
-			job.DeliveryStatus = "已投递"
-			if !inserted {
-				database.DB.Model(&model.ZhilianJobData{}).
-					Where("job_id = ?", job.JobId).
-					Update("delivery_status", "已投递")
+		if w.cfg.Debugger {
+			job.DeliveryStatus = "已扫描"
+		} else {
+			applyBtn, _ := item.Element("button.collect-and-apply__btn")
+			if applyBtn != nil {
+				applyBtn.MustClick()
+				time.Sleep(2 * time.Second)
+				w.handleDeliveryDialog()
+				job.DeliveryStatus = "已投递"
+				if !inserted {
+					database.DB.Model(&model.ZhilianJobData{}).
+						Where("job_id = ?", job.JobId).
+						Update("delivery_status", "已投递")
+				}
 			}
 		}
 

@@ -89,6 +89,7 @@ func (s *LiepinService) Start(ctx context.Context) error {
 		City:       modelCfg.City,
 		SalaryCode: modelCfg.SalaryCode,
 		WaitTime:   2,
+		Debugger:   modelCfg.Debugger != nil && *modelCfg.Debugger == 1,
 	}
 	w := liepinWorker.New(wCfg)
 

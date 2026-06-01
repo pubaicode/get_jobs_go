@@ -14,6 +14,7 @@ import PageHeader from '@/app/components/PageHeader'
 
 interface ZhilianConfig {
   id?: number
+  debugger?: number
   keywords?: string
   cityCode?: string
   salary?: string
@@ -332,6 +333,19 @@ export default function ZhilianPage() {
                       value={config.salary || ''}
                       onChange={(e) => setConfig((c) => ({ ...c, salary: e.target.value }))}
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="workMode">投递模式</Label>
+                    <select
+                      id="workMode"
+                      value={String(config.debugger ?? 0)}
+                      onChange={(e) => setConfig({ ...config, debugger: Number(e.target.value) })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value="0">投递模式</option>
+                      <option value="1">调试模式</option>
+                    </select>
+                    <p className="text-xs text-muted-foreground">调试模式下仅扫描并记录岗位信息，不会实际投递。</p>
                   </div>
                 </div>
               )}

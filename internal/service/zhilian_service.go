@@ -89,6 +89,7 @@ func (s *ZhilianService) Start(ctx context.Context) error {
 		CityCode: modelCfg.CityCode,
 		Salary:   modelCfg.Salary,
 		WaitTime: 2,
+		Debugger: modelCfg.Debugger != nil && *modelCfg.Debugger == 1,
 	}
 	w := zhilianWorker.New(wCfg)
 

@@ -4,6 +4,7 @@ import "time"
 
 type ZhilianConfig struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
+	Debugger  *int      `json:"debugger" gorm:"default:0"`
 	Keywords  string    `json:"keywords" gorm:"type:text"`
 	CityCode  string    `json:"cityCode" gorm:"column:cityCode;size:255"`
 	Salary    string    `json:"salary" gorm:"size:255"`

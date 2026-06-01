@@ -21,6 +21,7 @@ type Config struct {
 	City       string
 	SalaryCode string
 	WaitTime   int
+	Debugger   bool
 }
 
 type Worker struct {
@@ -189,6 +190,11 @@ func (w *Worker) submit(keyword string) error {
 
 			job := w.parseJobCard(card, i+1, len(cards))
 			if job == nil {
+				continue
+			}
+
+			if w.cfg.Debugger {
+				w.logProgress(fmt.Sprintf("调试模式, 跳过投递: %s - %s", job.CompName, job.JobTitle), i+1, len(cards))
 				continue
 			}
 
