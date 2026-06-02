@@ -39,7 +39,11 @@ cd front
 npm run build:prod
 go run main.go
 在浏览器中输入 http://localhost:8888
+
+默认只查询不投递，可在配置设置中选择投递模式来开启自动投递
 ```
+
+
 
 
 后端默认监听 `:8888`，可通过环境变量配置：

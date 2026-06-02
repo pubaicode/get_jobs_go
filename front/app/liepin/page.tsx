@@ -123,16 +123,8 @@ export default function LiepinPage() {
     return t.replace(/，/g, ',')
   }
 
-  // 将输入的逗号分隔字符串转换为 JSON 数组字符串保存到数据库
   const serializeKeywordsForDb = (display?: string): string => {
-    const raw = (display || '').trim()
-    if (!raw) return '[]'
-    const norm = raw.replace(/，/g, ',')
-    const tokens = norm
-      .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0)
-    return JSON.stringify(tokens)
+    return (display || '').trim().replace(/，/g, ',')
   }
 
   const fetchAllData = async () => {
@@ -145,10 +137,17 @@ export default function LiepinPage() {
       if (data.config) {
         const normalized = { ...data.config }
         normalized.keywords = parseKeywordsFromDb(data.config.keywords)
+        // 将已保存的中文城市名转为 code
+        if (data.options?.city && data.config.city) {
+          const match = data.options.city.find((c: LiepinOption) => c.name === data.config.city)
+          if (match) {
+            normalized.city = match.code
+          }
+        }
         setConfig(normalized)
         // 检查当前城市是否在选项列表中
-        if (data.options?.city && data.config.city) {
-          const cityExists = data.options.city.some((c: LiepinOption) => c.name === data.config.city || c.code === data.config.city)
+        if (data.options?.city && normalized.city) {
+          const cityExists = data.options.city.some((c: LiepinOption) => c.code === normalized.city)
           setIsCustomCity(!cityExists)
         }
       }
@@ -392,7 +391,7 @@ export default function LiepinPage() {
                   >
                     <option value="">请选择城市</option>
                     {options.city.map((city) => (
-                      <option key={city.id} value={city.name}>
+                      <option key={city.id} value={city.code}>
                         {city.name}
                       </option>
                     ))}

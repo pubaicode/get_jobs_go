@@ -164,7 +164,7 @@ func (w *Worker) submit(keyword string) error {
 	if w.cfg.SalaryCode != "" {
 		params.Set("salary", w.cfg.SalaryCode)
 	}
-
+	fmt.Println(">>><>>", params.Encode())
 	if err := w.page.Navigate(u + "?" + params.Encode()); err != nil {
 		return err
 	}

@@ -142,7 +142,7 @@ func (w *Worker) Login() error {
 }
 
 func (w *Worker) deliverByKeyword(keyword string) error {
-	searchUrl := "https://www.zhaopin.com/sou/jl" + w.cfg.CityCode
+	searchUrl := "https://www.zhaopin.com/sou/jl" + w.cfg.CityCode + "/kw01JG0RO0DG06203E01JG/"
 	params := url.Values{}
 	params.Set("key", keyword)
 	if w.cfg.CityCode != "" {
@@ -151,7 +151,7 @@ func (w *Worker) deliverByKeyword(keyword string) error {
 	if w.cfg.Salary != "" {
 		params.Set("salary", w.cfg.Salary)
 	}
-
+	fmt.Println(">>>>zhilian:", params.Encode())
 	if err := w.page.Navigate(searchUrl + "?" + params.Encode()); err != nil {
 		return err
 	}

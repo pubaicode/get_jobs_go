@@ -248,6 +248,25 @@ func splitAndTrim(s string) []string {
 	if s == "" {
 		return nil
 	}
+
+	trimmed := strings.TrimSpace(s)
+	if strings.HasPrefix(trimmed, "[") && strings.HasSuffix(trimmed, "]") {
+		var arr []string
+		if err := json.Unmarshal([]byte(trimmed), &arr); err == nil {
+			result := make([]string, 0, len(arr))
+			for _, v := range arr {
+				v = strings.TrimSpace(v)
+				if v != "" {
+					result = append(result, v)
+				}
+			}
+			if len(result) == 0 {
+				return nil
+			}
+			return result
+		}
+	}
+
 	parts := strings.Split(s, ",")
 	result := make([]string, 0, len(parts))
 	for _, p := range parts {

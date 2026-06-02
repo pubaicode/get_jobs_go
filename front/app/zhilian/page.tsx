@@ -105,14 +105,7 @@ export default function ZhilianPage() {
   }
 
   const serializeKeywordsForDb = (display?: string): string => {
-    const raw = (display || '').trim()
-    if (!raw) return '[]'
-    const norm = raw.replace(/，/g, ',')
-    const tokens = norm
-      .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0)
-    return JSON.stringify(tokens)
+    return (display || '').trim().replace(/，/g, ',')
   }
 
   const fetchAllData = async () => {

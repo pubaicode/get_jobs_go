@@ -2,6 +2,7 @@ package manager
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 	"sync"
@@ -62,12 +63,19 @@ func (m *BrowserManager) Init() error {
 	}
 
 	userDir := "./.chrome-data"
-	u := launcher.New().
+
+	// If Chrome is already running with this user data dir, kill it first
+	launcher.New().UserDataDir(userDir).Kill()
+
+	u, err := launcher.New().
 		UserDataDir(userDir).
 		Headless(false).
 		Set("start-maximized").
 		Set("disable-blink-features", "AutomationControlled").
-		MustLaunch()
+		Launch()
+	if err != nil {
+		return fmt.Errorf("failed to launch browser: %w", err)
+	}
 
 	m.browser = rod.New().ControlURL(u).
 		MustConnect()
@@ -209,15 +217,33 @@ func (m *BrowserManager) StartLoginMonitor(platform string, page *rod.Page) {
 			delete(m.monitors, platform)
 			m.mu.Unlock()
 		}()
+		checkCount := 0
 		for {
 			select {
 			case <-ticker.C:
+				checkCount++
 				var loggedIn bool
 				switch platform {
 				case "boss":
 					loggedIn = CheckBossLoggedIn(page)
 				case "liepin":
 					loggedIn = CheckLiepinLoggedIn(page)
+					if !loggedIn && checkCount > 5 {
+						if err := page.Navigate("https://www.liepin.com/"); err == nil {
+							if err := page.WaitLoad(); err == nil {
+								loggedIn = CheckLiepinLoggedIn(page)
+								if !loggedIn {
+									info, _ := page.Info()
+									if info != nil {
+										u := info.URL
+										if strings.Contains(u, "liepin.com") && !strings.Contains(u, "/login") && !strings.Contains(u, "/passport") {
+											loggedIn = true
+										}
+									}
+								}
+							}
+						}
+					}
 				case "zhilian":
 					loggedIn = CheckZhilianLoggedIn(page)
 				default:
@@ -287,17 +313,37 @@ func CheckLiepinLoggedIn(page *rod.Page) bool {
 		return false
 	}
 
-	el, err := page.Timeout(3 * time.Second).Element("#header-quick-menu-login, a[href*='login']")
-	if err == nil && el != nil {
+	info, err := page.Info()
+	if err != nil {
+		return false
+	}
+	u := info.URL
+
+	if strings.Contains(u, "/login") || strings.Contains(u, "/passport") || strings.Contains(u, "login.liepin") {
+		return false
+	}
+
+	if strings.Contains(u, "/personal") || strings.Contains(u, "/account") || strings.Contains(u, "/resume") || strings.Contains(u, "/settings") || strings.Contains(u, "/my") || strings.Contains(u, "/mycenter") || strings.Contains(u, "/member") {
+		return true
+	}
+
+	el, _ := page.Timeout(3 * time.Second).Element(
+		"#header-quick-menu-user-info, img.header-quick-menu-user-photo, " +
+			"[class*='user-photo'], [class*='user-avatar'], [class*='header-user'], " +
+			"[class*='nav-user'], [class*='login-user'], [class*='has-login']",
+	)
+	if el != nil {
+		return true
+	}
+
+	el, _ = page.Timeout(3 * time.Second).Element(
+		"#header-quick-menu-login, a[href*='login'], [class*='btn-login'], [class*='login-btn']",
+	)
+	if el != nil {
 		vis, _ := el.Visible()
 		if vis {
 			return false
 		}
-	}
-
-	el, err = page.Timeout(3 * time.Second).Element("#header-quick-menu-user-info, img.header-quick-menu-user-photo")
-	if err == nil && el != nil {
-		return true
 	}
 
 	return false
